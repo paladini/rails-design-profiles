@@ -1,0 +1,12 @@
+# CSS values are intentionally explicit and reviewable. Reference files are context for AI agents.
+active: default
+profiles:
+  default:
+    reference: null
+    tokens:
+      color-primary: "#2563eb"
+      color-surface: "#ffffff"
+      color-text: "#111827"
+      font-body: "system-ui, sans-serif"
+      space-page: "1.5rem"
+
