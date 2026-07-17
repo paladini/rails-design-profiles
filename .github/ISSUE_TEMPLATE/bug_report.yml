@@ -1,0 +1,21 @@
+name: Bug report
+description: Report behavior that differs from the documented contract.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for improving rails-design-profiles. Please remove secrets and proprietary DESIGN.md content."
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Ruby, Rails, and rails-design-profiles versions.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include configuration, command, expected result, and actual result.
+    validations:
+      required: true

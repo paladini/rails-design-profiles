@@ -1,5 +1,5 @@
 source "https://rubygems.org"
 
-gemspec path: "../rails-design-profiles.gemspec"
+gemspec path: ".."
 gem "actionview", "~> 7.1.0"
 gem "railties", "~> 7.1.0"

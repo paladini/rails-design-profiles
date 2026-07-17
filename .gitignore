@@ -3,4 +3,6 @@
 *.gem
 /Gemfile.lock
 /.ruby-lsp/
+/output/
+/.playwright-cli/
 /gemfiles/*.lock
