@@ -4,22 +4,27 @@
 [![RubyGems](https://img.shields.io/gem/v/rails-design-profiles?logo=rubygems&label=RubyGems)](https://rubygems.org/gems/rails-design-profiles)
 [![License](https://img.shields.io/github/license/paladini/rails-design-profiles)](LICENSE.txt)
 
-**A design reference should influence your Rails UI without becoming an unreviewable theme generator.**
+**Versioned, reviewable design-token profiles for Rails applications.**
 
-`rails-design-profiles` keeps the two jobs separate:
+`rails-design-profiles` gives Rails teams a deliberate bridge between a visual reference and production UI code. Keep a `DESIGN.md` locally for people and AI tools to consult; turn only the choices your team approves into a small, versioned YAML token profile. The gem exposes the active profile as standard CSS custom properties.
 
-1. `DESIGN.md` gives your AI agent a clear visual reference.
-2. A small YAML profile exposes the tokens your Rails application actually uses.
+It is not a Markdown-to-theme compiler. It does not install someone else's CSS, assets, or brand.
 
-The result is a deliberate CSS-variable contract you can review, version, switch, and evolve with your team.
+## Why it exists
 
-## Why this exists
+A design reference can make an agent or contributor more consistent, but Markdown alone cannot safely change an application. Replacing a stylesheet to trial a visual direction is equally hard to review and easy to regret.
 
-AI can read a `DESIGN.md`, but Markdown alone does not change an application. Conversely, replacing an entire stylesheet to try a visual direction is risky and hard to review.
+This gem makes the boundary explicit:
 
-This gem gives Rails applications a narrow bridge between the two: references stay local and explicit; CSS variables are emitted from an active profile; your components decide which tokens to consume.
+| Design reference | Production contract |
+| --- | --- |
+| `DESIGN.md` gives people and AI tools visual context. | `config/design_profiles.yml` contains the tokens your application actually serves. |
+| Imported from a public, openly licensed catalog. | Authored, reviewed, versioned, and owned by your team. |
+| Never executed by the gem. | Rendered as `--rdp-*` CSS custom properties. |
 
-## Install
+## Quick start
+
+Add the gem and run the installer:
 
 ```ruby
 # Gemfile
@@ -31,13 +36,13 @@ bundle install
 bin/rails generate rails_design_profiles:install
 ```
 
-The generator adds a profile file and inserts the helper into `app/views/layouts/application.html.erb`:
+The generator creates `config/design_profiles.yml` and inserts this helper in the application layout's `<head>`:
 
 ```erb
 <%= rails_design_profiles_tags %>
 ```
 
-Use the resulting variables in your own CSS:
+Use the emitted variables in whichever CSS setup your application already has:
 
 ```css
 body {
@@ -52,9 +57,9 @@ body {
 }
 ```
 
-## The profile contract
+## Define a profile
 
-`config/design_profiles.yml` is the source of truth for production tokens. Token names become `--rdp-*` CSS variables.
+`config/design_profiles.yml` is the source of truth. The active profile is global to the Rails application and is evaluated for each response.
 
 ```yaml
 active: editorial
@@ -69,61 +74,46 @@ profiles:
       space-page: "1.5rem"
 ```
 
-The active profile is global to the app and is resolved for every response. Version 0.1 does not include per-session or query-string overrides.
+Each token becomes a CSS variable with the `rdp` prefix, for example `color-primary` becomes `--rdp-color-primary`. This keeps the contract visible in a diff and avoids silently changing component styles.
 
-## Bring a public reference into your project
+## Import a design reference
 
-The v0.1 catalog uses only the MIT-licensed [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) collection.
+Version 0.1 uses the MIT-licensed [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) catalog only.
 
 ```sh
 bin/rails design:list
 bin/rails design:install[claude]
 ```
 
-Installation stores the reference in `config/design_profiles/references/claude.md` and creates an empty `claude` profile. Read that reference with your agent, choose the tokens that fit your product, and add them deliberately to YAML.
+Installation archives the reference at `config/design_profiles/references/claude.md` and creates an empty `claude` profile. Read the reference, decide which ideas belong in your product, then add your own tokens. Existing references and profiles are never overwritten.
 
-Switch profiles with:
+The gem is not affiliated with getdesign.md, VoltAgent, or any referenced brand.
+
+## Switch profiles
+
+After reviewing a profile, make it active with one explicit change:
 
 ```sh
 bin/rails design:activate[claude]
 ```
 
-The gem never copies third-party CSS, assets, or branding. It is not affiliated with getdesign.md, VoltAgent, or any referenced brand.
-
-## How it works
-
-```text
-DESIGN.md reference ──> team / AI design decisions ──> design_profiles.yml
-                                                            │
-                                                            ▼
-                                              <style> --rdp-* variables
-                                                            │
-                                                            ▼
-                                                   your Rails components
-```
-
-This is intentionally not a Markdown-to-CSS compiler. It preserves human judgment at the point where visual decisions become production code.
+The new application-wide profile takes effect on the next response. Per-session previews and query-string overrides are intentionally outside the first release.
 
 ## Compatibility
 
 - Ruby 3.1+
 - Rails 7.1+
-- Asset pipeline, Propshaft, Importmap, Tailwind, and custom CSS all work because the output is standard CSS variables.
+- Standard CSS-variable consumers: the asset pipeline, Propshaft, Importmap, Tailwind, and custom CSS
 
-## Community
+## Project status and roadmap
 
-- Ask questions and share workflows in [Discussions](https://github.com/paladini/rails-design-profiles/discussions).
-- Report reproducible defects or focused feature requests through the issue templates.
-- Read [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SUPPORT.md](SUPPORT.md), and [SECURITY.md](SECURITY.md) before participating.
+The public API is intentionally small while the contract earns real-world use. Planned work includes profile validation and diagnostics, a development preview surface, more openly licensed reference adapters, and community-maintained example Rails applications.
 
-### Roadmap
+## Contributing and support
 
-- [ ] Profile validation and diagnostics
-- [ ] A profile preview surface for development
-- [ ] More import adapters for openly licensed design references
-- [ ] Community-maintained example Rails applications
+Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and use [GitHub Discussions](https://github.com/paladini/rails-design-profiles/discussions) for questions and early proposals. Report reproducible defects and focused feature requests through the [issue tracker](https://github.com/paladini/rails-design-profiles/issues). See [SECURITY.md](SECURITY.md) for responsible vulnerability reporting.
 
-## Development
+To work on the gem locally:
 
 ```sh
 bundle install
