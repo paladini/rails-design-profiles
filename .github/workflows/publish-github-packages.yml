@@ -1,0 +1,36 @@
+name: Publish GitHub Packages
+
+# Publishes the current gem version to GitHub Packages (RubyGems registry) only.
+# Does not push to rubygems.org.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: false
+
+      - name: Build gem
+        run: |
+          mkdir -p pkg
+          gem build rails-design-profiles.gemspec
+          mv ./*.gem pkg/
+
+      - name: Configure GitHub Packages credentials
+        run: |
+          mkdir -p "$HOME/.gem"
+          printf '%s\n' "---" ":github: Bearer ${{ secrets.GITHUB_TOKEN }}" > "$HOME/.gem/credentials"
+          chmod 0600 "$HOME/.gem/credentials"
+
+      - name: Push gem to GitHub Packages
+        run: gem push --key github --host https://rubygems.pkg.github.com/paladini pkg/*.gem
